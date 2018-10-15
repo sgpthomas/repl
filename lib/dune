@@ -1,0 +1,4 @@
+(library
+ (name repl)
+ (public_name repl)
+ (libraries core))

@@ -1,0 +1,5 @@
+(** @canonical Repl.History *)
+module History = Repl__History
+
+(** @canonical Repl.Repl *)
+module Repl = Repl
