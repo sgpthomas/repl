@@ -1,6 +1,0 @@
-description = ""
-requires = "core"
-archive(byte) = "repl.cma"
-archive(native) = "repl.cmxa"
-plugin(byte) = "repl.cma"
-plugin(native) = "repl.cmxs"

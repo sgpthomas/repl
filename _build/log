@@ -1,4 +1,0 @@
-# dune build example/simple.exe
-# OCAMLPARAM: unset
-$ /usr/bin/nproc > /tmp/dunee75d65.output 2> /dev/null
-$ /home/samthomas/.opam/4.06.1/bin/ocamlc.opt -config > /tmp/duneca1d52.output
