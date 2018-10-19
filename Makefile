@@ -6,3 +6,6 @@ lib:
 
 simple:
 	dune build example/simple.exe
+
+run: simple
+	_build/default/example/simple.exe

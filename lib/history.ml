@@ -1,35 +1,63 @@
 
 open Core
 
-type 'a t = (int * 'a list)
+module Map = Map.Make(Int)
 
-type result = Reset
-            | Value of int
+type pointer = Pos of int
+             | Current
 
-let cap_inc x n =
-  if (x + 1) > n then x
-  else x + 1
+(** Type of history. Biggest number is most recent. *)
+type 'a t = {
+  count : int;
+  pointer : pointer;
+  hist : 'a Map.t
+}
 
-let cap_dec x =
-  if (x - 1) < (-1) then Reset
-  else Value (x - 1)
+let empty : 'a t = {
+  count = 0;
+  pointer = Pos 0;
+  hist = Map.empty
+}
 
-let empty = (0, [])
-let is_empty = function
-  | (0, []) -> true
-  | _ -> false
+let point_of_t h =
+  match h.pointer with
+  | Current -> (-1)
+  | Pos i -> i
 
-let add e (_pt, lst) = (0, e :: lst)
+let is_empty h = h.count = 0
 
-let page_forward (pt, lst) =
-  match lst with
-  | [] -> (None, empty)
-  | _x -> match cap_dec pt with
-    | Reset -> (None, (0, lst))
-    | Value x -> (List.nth lst x, (x, lst))
+let add e h =
+  let n = h.count + 1 in
+  {
+  count = n;
+  pointer = Current;
+  hist = match Map.add h.hist ~key:n ~data:e with
+    | `Duplicate -> h.hist
+    | `Ok s -> s
+}
 
-let page_backward (pt, lst) =
-  match lst with
-  | [] -> (None, empty)
-  | _x -> let pt' = cap_inc pt (List.length lst) in
-    (List.nth lst pt, (pt', lst))
+let next_ptr h =
+  {
+    h with pointer = match h.pointer with
+      | Current -> Current
+      | Pos i ->
+        if (i + 1) > h.count then Current
+        else Pos (i + 1)
+  }
+
+let prev_ptr h =
+  {
+    h with pointer = match h.pointer with
+      | Current -> Pos h.count
+      | Pos i ->
+        if (i - 1) < 0 then Pos 0
+        else Pos (i - 1)
+  }
+
+let page_next h =
+  let h' = next_ptr h in
+  (Map.find h'.hist (point_of_t h'), h')
+
+let page_prev h =
+  let h' = prev_ptr h in
+  (Map.find h'.hist (point_of_t h'), h')
